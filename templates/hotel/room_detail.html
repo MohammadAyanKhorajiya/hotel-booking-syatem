@@ -1,0 +1,292 @@
+<!-- templates/hotel/room_detail.html - एक कमरे की विस्तृत जानकारी -->
+{% extends "base.html" %}
+
+{% block title %}{{ room.name }} - होटल{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Breadcrumb */
+    .breadcrumb {
+        padding: 15px 0;
+        color: #666;
+    }
+    
+    .breadcrumb a {
+        color: #667eea;
+        text-decoration: none;
+    }
+    
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    /* Room detail container */
+    .room-detail {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        margin-bottom: 50px;
+    }
+    
+    /* Room main image */
+    .room-main-image {
+        width: 100%;
+        height: 400px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 100px;
+    }
+    
+    .room-main-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    /* Room details content */
+    .room-details-content {
+        padding: 40px;
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 40px;
+    }
+    
+    /* Left section */
+    .room-info-section h2 {
+        font-size: 32px;
+        color: #333;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .room-type-badge {
+        display: inline-block;
+        background: #667eea;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    
+    .description {
+        color: #666;
+        font-size: 16px;
+        line-height: 1.8;
+        margin-bottom: 30px;
+    }
+    
+    /* Amenities section */
+    .amenities-section h3 {
+        font-size: 20px;
+        margin-bottom: 15px;
+        color: #333;
+    }
+    
+    .amenities-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .amenity-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        background: #f5f5f5;
+        border-radius: 5px;
+    }
+    
+    .amenity-item::before {
+        content: "✓";
+        color: #667eea;
+        font-weight: bold;
+        font-size: 18px;
+    }
+    
+    /* Right section - Booking info */
+    .booking-section {
+        background: #f9f9f9;
+        padding: 30px;
+        border-radius: 10px;
+        height: fit-content;
+        border: 2px solid #667eea;
+    }
+    
+    .price-display {
+        text-align: center;
+        margin-bottom: 30px;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 20px;
+    }
+    
+    .price-amount {
+        font-size: 48px;
+        color: #ff6b6b;
+        font-weight: bold;
+    }
+    
+    .price-label {
+        color: #666;
+        font-size: 14px;
+    }
+    
+    /* Booking info items */
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .info-label {
+        color: #666;
+        font-weight: 500;
+    }
+    
+    .info-value {
+        color: #333;
+        font-weight: bold;
+    }
+    
+    /* Booking button */
+    .book-btn {
+        width: 100%;
+        padding: 15px;
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s;
+        margin-top: 20px;
+    }
+    
+    .book-btn:hover {
+        background: #ff5252;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .room-main-image {
+            height: 250px;
+            font-size: 50px;
+        }
+        
+        .room-details-content {
+            grid-template-columns: 1fr;
+            padding: 20px;
+            gap: 30px;
+        }
+        
+        .room-info-section h2 {
+            font-size: 24px;
+        }
+        
+        .amenities-list {
+            grid-template-columns: 1fr;
+        }
+        
+        .price-amount {
+            font-size: 36px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Breadcrumb navigation -->
+    <div class="breadcrumb">
+        <a href="{% url 'hotel:home' %}">होम</a> / 
+        <a href="{% url 'hotel:rooms' %}">कमरे</a> / 
+        <span>{{ room.name }}</span>
+    </div>
+</div>
+
+<div class="room-detail">
+    <!-- Main image -->
+    <div class="room-main-image">
+        {% if room.image %}
+            <img src="{{ room.image.url }}" alt="{{ room.name }}">
+        {% else %}
+            🛏️
+        {% endif %}
+    </div>
+    
+    <!-- Details -->
+    <div class="room-details-content">
+        <!-- Left: Information -->
+        <div class="room-info-section">
+            <h2>{{ room.name }}</h2>
+            <span class="room-type-badge">{{ room.get_room_type_display }}</span>
+            
+            <p class="description">
+                {{ room.description }}
+            </p>
+            
+            <!-- Amenities section -->
+            <div class="amenities-section">
+                <h3>🛎️ सुविधाएं</h3>
+                {% if room.amenities %}
+                    <div class="amenities-list">
+                        {% for amenity in room.amenities.split %}
+                            <div class="amenity-item">{{ amenity }}</div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p style="color: #999;">कोई सुविधाएं उपलब्ध नहीं</p>
+                {% endif %}
+            </div>
+            
+            <!-- Additional info -->
+            <div style="margin-top: 30px;">
+                <h3 style="margin-bottom: 15px;">📋 अतिरिक्त जानकारी</h3>
+                <p><strong>कुल कमरे उपलब्ध:</strong> {{ room.total_rooms }}</p>
+            </div>
+        </div>
+        
+        <!-- Right: Booking section -->
+        <div class="booking-section">
+            <div class="price-display">
+                <div class="price-amount">₹{{ room.price_per_night }}</div>
+                <div class="price-label">प्रति रात</div>
+            </div>
+            
+            <div class="info-item">
+                <span class="info-label">कमरे का प्रकार</span>
+                <span class="info-value">{{ room.get_room_type_display }}</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="info-label">उपलब्ध कमरे</span>
+                <span class="info-value">{{ room.total_rooms }}</span>
+            </div>
+            
+            <div class="info-item">
+                <span class="info-label">स्थिति</span>
+                <span class="info-value" style="color: #28a745;">✓ उपलब्ध</span>
+            </div>
+            
+            <button class="book-btn" onclick="alert('बुकिंग सिस्टम जल्द आ रहा है')">
+                🔖 अभी बुक करें
+            </button>
+            
+            <a href="{% url 'hotel:rooms' %}" style="display: block; text-align: center; margin-top: 15px; color: #667eea; text-decoration: none;">
+                ← सभी कमरों पर वापस जाएं
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

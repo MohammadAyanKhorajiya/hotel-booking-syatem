@@ -1,0 +1,256 @@
+<!-- templates/hotel/rooms.html - सभी कमरों की list page -->
+{% extends "base.html" %}
+
+{% block title %}हमारे कमरे - होटल{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page title */
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 60px 20px;
+        text-align: center;
+        margin-bottom: 50px;
+    }
+    
+    .page-header h1 {
+        font-size: 42px;
+        margin-bottom: 10px;
+    }
+    
+    /* Filter section */
+    .filter-section {
+        background: white;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .filter-group {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    .filter-group label {
+        font-weight: bold;
+        color: #333;
+    }
+    
+    /* कमरों की grid */
+    .rooms-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+    
+    /* Room card styling */
+    .room-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .room-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    /* कमरे की तस्वीर */
+    .room-image {
+        width: 100%;
+        height: 220px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 60px;
+        position: relative;
+    }
+    
+    .room-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .room-type-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #ff6b6b;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    
+    /* कमरे की जानकारी */
+    .room-info {
+        padding: 25px;
+    }
+    
+    .room-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    
+    .room-desc {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+    
+    /* amenities list */
+    .amenities {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+    
+    .amenity-badge {
+        background: #f0f0f0;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        color: #555;
+    }
+    
+    /* Price और button */
+    .room-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+    
+    .price {
+        font-size: 20px;
+        font-weight: bold;
+        color: #ff6b6b;
+    }
+    
+    .price-label {
+        font-size: 12px;
+        color: #999;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        background: #667eea;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn:hover {
+        background: #764ba2;
+    }
+    
+    /* No rooms message */
+    .no-rooms {
+        text-align: center;
+        padding: 50px 20px;
+        background: white;
+        border-radius: 10px;
+        font-size: 18px;
+        color: #666;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 28px;
+        }
+        
+        .filter-group {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .rooms-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🛏️ हमारे कमरे</h1>
+    <p>आपकी पसंद का कमरा चुनें</p>
+</div>
+
+<div class="container">
+    <!-- Filter section (भविष्य के लिए) -->
+    <div class="filter-section">
+        <h3>🔍 फिल्टर करें</h3>
+        <div class="filter-group">
+            <p>आप कमरे को नाम, प्रकार या मूल्य से search कर सकते हैं।</p>
+        </div>
+    </div>
+    
+    <!-- कमरों की list -->
+    {% if rooms %}
+        <div class="rooms-container">
+            {% for room in rooms %}
+            <div class="room-card">
+                <div class="room-image">
+                    {% if room.image %}
+                        <img src="{{ room.image.url }}" alt="{{ room.name }}">
+                    {% else %}
+                        🛏️
+                    {% endif %}
+                    <span class="room-type-badge">{{ room.get_room_type_display }}</span>
+                </div>
+                
+                <div class="room-info">
+                    <h3 class="room-title">{{ room.name }}</h3>
+                    <p class="room-desc">{{ room.description }}</p>
+                    
+                    <!-- सुविधाएं display करना -->
+                    {% if room.amenities %}
+                    <div class="amenities">
+                        {% for amenity in room.amenities.split|truncatewords:4 %}
+                            {% if amenity != '...' %}
+                            <span class="amenity-badge">✓ {{ amenity }}</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Price और button -->
+                    <div class="room-footer">
+                        <div>
+                            <div class="price">₹{{ room.price_per_night }}</div>
+                            <div class="price-label">प्रति रात</div>
+                        </div>
+                        <a href="{% url 'hotel:room_detail' room.pk %}" class="btn">विस्तार देखें</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-rooms">
+            <p>😔 अभी कोई कमरे उपलब्ध नहीं हैं।</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
